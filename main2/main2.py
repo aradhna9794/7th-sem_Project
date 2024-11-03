@@ -1,188 +1,5 @@
-# import pandas as pd
-# import numpy as np
-# import matplotlib.pyplot as plt
-# from fpdf import FPDF
-# from datetime import datetime
-# import seaborn as sns
 
-# # Load the COVID-19 dataset (adjust with the correct path or URL)
-# # url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
-# data = pd.read_csv("./owid-covid-data.csv")
-
-# # Filter data for India
-# india_data = data[data['location'] == 'India'].copy()
-
-# # Convert the date column to datetime type
-# india_data['date'] = pd.to_datetime(india_data['date'])
-
-# # Filter relevant columns
-# relevant_cols = ['date', 'total_cases', 'new_cases', 'total_deaths', 'new_deaths', 'total_vaccinations']
-# india_data = india_data[relevant_cols]
-
-# # Plot 1: Total COVID-19 Cases
-# plt.figure(figsize=(10, 6))
-# plt.plot(india_data['date'], india_data['total_cases'], label="Total Cases", color="blue")
-# plt.title('Total COVID-19 Cases in India')
-# plt.xlabel('Date')
-# plt.ylabel('Total Cases')
-# plt.grid()
-# plt.legend()
-# plt.savefig('total_cases.png')
-# plt.close()
-
-# # Plot 2: Total Vaccinations
-# plt.figure(figsize=(10, 6))
-# plt.plot(india_data['date'], india_data['total_vaccinations'], label="Total Vaccinations", color="green")
-# plt.title('Total COVID-19 Vaccinations in India')
-# plt.xlabel('Date')
-# plt.ylabel('Total Vaccinations')
-# plt.grid()
-# plt.legend()
-# plt.savefig('total_vaccinations.png')
-# plt.close()
-
-# # Assume additional data for gender and age is available in the dataset or merged
-# # Example placeholders for demonstration
-# india_data['gender'] = np.random.choice(['male', 'female'], size=len(india_data))  # Random gender data
-# india_data['age_group'] = np.random.choice(['0-18', '18-60', '60+'], size=len(india_data))  # Random age data
-
-# # Plot 3: Cases Based on Gender
-# gender_data = india_data.groupby('gender')['new_cases'].sum()
-# plt.figure(figsize=(8, 5))
-# gender_data.plot(kind='bar', color=['blue', 'orange'])
-# plt.title('COVID-19 Cases by Gender in India')
-# plt.xlabel('Gender')
-# plt.ylabel('Total Cases')
-# plt.savefig('gender_cases.png')
-# plt.close()
-
-# # Plot 4: Cases Based on Age Group
-# age_group_data = india_data.groupby('age_group')['new_cases'].sum()
-# plt.figure(figsize=(8, 5))
-# age_group_data.plot(kind='bar', color=['purple', 'brown', 'pink'])
-# plt.title('COVID-19 Cases by Age Group in India')
-# plt.xlabel('Age Group')
-# plt.ylabel('Total Cases')
-# plt.savefig('age_group_cases.png')
-# plt.close()
-
-# # Plot 5: Total Deaths Over Time
-# plt.figure(figsize=(10, 6))
-# plt.plot(india_data['date'], india_data['total_deaths'], label="Total Deaths", color="red")
-# plt.title('Total COVID-19 Deaths in India')
-# plt.xlabel('Date')
-# plt.ylabel('Total Deaths')
-# plt.grid()
-# plt.legend()
-# plt.savefig('total_deaths.png')
-# plt.close()
-
-# # Generate PDF
-# pdf = FPDF()
-
-# # Add images to the PDF
-# def add_plot_to_pdf(pdf, image_path, title):
-#     pdf.add_page()
-#     pdf.set_font('Arial', 'B', 16)
-#     pdf.cell(40, 10, title)
-#     pdf.image(image_path, x=10, y=30, w=180)
-
-# # Add plots to PDF with titles
-# add_plot_to_pdf(pdf, 'total_cases.png', 'Total COVID-19 Cases in India')
-# add_plot_to_pdf(pdf, 'total_vaccinations.png', 'Total COVID-19 Vaccinations in India')
-# add_plot_to_pdf(pdf, 'gender_cases.png', 'COVID-19 Cases by Gender in India')
-# add_plot_to_pdf(pdf, 'age_group_cases.png', 'COVID-19 Cases by Age Group in India')
-# add_plot_to_pdf(pdf, 'total_deaths.png', 'Total COVID-19 Deaths in India')
-
-# # Save the PDF file with the current system date and time
-# current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-# pdf_file_name = f'covid_report_{current_time}.pdf'
-# pdf.output(pdf_file_name)
-
-# print(f"PDF report saved as {pdf_file_name}")
-
-
-
-# from scipy.integrate import odeint
-# import numpy as np
-# import matplotlib.pyplot as plt
-# from sklearn.metrics import mean_squared_error
-
-# # SIR model differential equations
-# def sir_model(y, t, beta, gamma):
-#     S, I, R = y
-#     dS_dt = -beta * S * I
-#     dI_dt = beta * S * I - gamma * I
-#     dR_dt = gamma * I
-#     return [dS_dt, dI_dt, dR_dt]
-
-# # Solve the SIR model
-# def solve_sir(S0, I0, R0, beta, gamma, t):
-#     y0 = [S0, I0, R0]
-#     return odeint(sir_model, y0, t, args=(beta, gamma))
-
-# # Compare SIR model to Caputo Derivative and calculate MSE
-# def compare_models(country):
-#     # Load country data
-#     country_data = get_country_data(country)
-    
-#     # Extract total cases (actual data)
-#     total_cases = country_data['total_cases'].fillna(0).values
-#     time_days = np.linspace(0, len(total_cases), len(total_cases))
-    
-#     # Normalize data for SIR model
-#     N = country_data['population'].iloc[0]  # Population size
-#     I0 = total_cases[0]  # Initial infected
-#     R0 = 0  # Initial recovered
-#     S0 = N - I0  # Initial susceptible
-    
-#     # Parameters for SIR model (to be adjusted for fitting)
-#     beta = 0.3  # Infection rate (can be optimized)
-#     gamma = 0.1  # Recovery rate (can be optimized)
-    
-#     # Solve the SIR model
-#     t = np.linspace(0, len(total_cases), len(total_cases))
-#     SIR_solution = solve_sir(S0, I0, R0, beta, gamma, t)
-    
-#     # Extract infected population from SIR solution
-#     SIR_infected = SIR_solution[:, 1]
-    
-#     # Caputo derivative solution (already calculated)
-#     caputo_solution = caputo_derivatives[country]
-    
-#     # Calculate MSE for SIR model
-#     mse_sir = mean_squared_error(total_cases, SIR_infected)
-    
-#     # Calculate MSE for Caputo Derivative model
-#     mse_caputo = mean_squared_error(total_cases, caputo_solution)
-    
-#     # Print the MSE for both models
-#     print(f"MSE for SIR Model (Country: {country}): {mse_sir}")
-#     print(f"MSE for Caputo Derivative Model (Country: {country}): {mse_caputo}")
-    
-#     # Plot the comparison
-#     plt.figure(figsize=(10, 6))
-#     plt.plot(country_data['date'], total_cases, label='Actual Data', color='black', linestyle='--')
-#     plt.plot(country_data['date'], SIR_infected, label='SIR Model Infected', color='green')
-#     plt.plot(country_data['date'], caputo_solution, label=f'Caputo Derivative (alpha={alpha})', color='blue')
-#     plt.title(f'COVID-19 Cases Comparison for {country}')
-#     plt.xlabel('Date')
-#     plt.ylabel('Number of Cases')
-#     plt.legend()
-#     plt.grid()
-#     plt.show()
-
-# # Example: Compare for India
-# compare_models('India')
-
-
-# import pandas as pd
-# import numpy as np
-# import matplotlib.pyplot as plt
-# from fpdf import FPDF
-# from datetime import datetime
-# from scipy.special import gamma
-
+# Total cases of each country wali plot ##
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -217,7 +34,7 @@ def caputo_derivative(y, t, alpha):
     return result
 
 # Define alpha value for Caputo Derivative
-alpha = 0.9
+alpha = 0.4
 
 # Dictionary to store caputo derivatives for all countries
 caputo_derivatives = {}
@@ -406,3 +223,7 @@ compare_models('India')
 compare_models('United States')
 compare_models('Brazil')
 compare_models('Thailand')
+
+
+
+
